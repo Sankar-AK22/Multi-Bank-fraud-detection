@@ -1,38 +1,58 @@
 // ================================
 // API WEBHOOKS - N8N INTEGRATION
+// Your n8n webhook for mule detection
 // ================================
 
-const N8N_WEBHOOK_BASE = 'https://your-n8n-instance.app.n8n.cloud/webhook';
+const N8N_WEBHOOK_URL = 'https://nithiya.app.n8n.cloud/webhook/detect-mule';
 
-export interface DetectionRequest {
-    accountIds: string[];
-    ipAddresses: string[];
-    deviceIds: string[];
-    transactionData: {
-        amount: number;
-        timestamp: string;
+export interface MuleDetectionRequest {
+    // Bank login data
+    bankLogins?: {
+        bankName: string;
+        userId: string;
+        ipAddress: string;
+        deviceId: string;
+        location: string;
+    }[];
+
+    // Transaction data
+    transactions?: {
         fromAccount: string;
         toAccount: string;
+        amount: number;
+        timestamp: string;
+        bankName: string;
     }[];
+
+    // IP/Device data
+    ipAddresses?: string[];
+    deviceIds?: string[];
 }
 
-export interface DetectionResponse {
+export interface MuleDetectionResponse {
     success: boolean;
     riskScore: number;
     riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+    isMuleNetwork: boolean;
     detectedPatterns: string[];
+    linkedAccounts: number;
     recommendation: string;
+    reasons: string[];
     timestamp: string;
 }
 
 /**
- * Run live fraud detection via n8n webhook
+ * Run mule detection via n8n webhook
+ * POST to: https://nithiya.app.n8n.cloud/webhook/detect-mule
  */
-export const runLiveDetection = async (
-    request: DetectionRequest
-): Promise<DetectionResponse> => {
+export const detectMuleNetwork = async (
+    request: MuleDetectionRequest
+): Promise<MuleDetectionResponse> => {
     try {
-        const response = await fetch(`${N8N_WEBHOOK_BASE}/fraud-detection`, {
+        console.log('🔍 Calling n8n webhook:', N8N_WEBHOOK_URL);
+        console.log('📦 Request data:', request);
+
+        const response = await fetch(N8N_WEBHOOK_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -44,68 +64,94 @@ export const runLiveDetection = async (
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        return await response.json();
+        const data = await response.json();
+        console.log('✅ n8n response:', data);
+        return data;
     } catch (error) {
-        console.error('Detection API Error:', error);
-        // Return mock response for demo purposes
+        console.error('❌ Detection API Error:', error);
+
+        // Return mock response for demo/fallback
         return {
-            success: true,
+            success: false,
             riskScore: 0.85,
             riskLevel: 'HIGH',
+            isMuleNetwork: true,
             detectedPatterns: [
-                'Multi-bank mule network',
-                'Rapid fund movement',
-                'Device fingerprint match'
+                'Multi-bank mule network detected',
+                'Same IP across multiple banks',
+                'Rapid fund movement pattern'
             ],
+            linkedAccounts: 6,
             recommendation: 'BLOCK_IMMEDIATELY',
+            reasons: [
+                'Same IP (192.168.45.102) used across 6 accounts',
+                'Device fingerprint matches known fraud ring',
+                'Transaction velocity exceeds normal patterns'
+            ],
             timestamp: new Date().toISOString()
         };
     }
 };
 
 /**
- * Fetch workflow status from n8n
+ * Test the webhook connection
  */
-export const getWorkflowStatus = async (): Promise<{
-    status: 'running' | 'completed' | 'error';
-    currentStep: number;
-    totalSteps: number;
-}> => {
+export const testWebhookConnection = async (): Promise<boolean> => {
     try {
-        const response = await fetch(`${N8N_WEBHOOK_BASE}/workflow-status`);
-        return await response.json();
-    } catch (error) {
-        console.error('Workflow Status Error:', error);
-        return {
-            status: 'running',
-            currentStep: 4,
-            totalSteps: 5
-        };
+        const response = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ test: true, ping: 'connection-test' }),
+        });
+        return response.ok;
+    } catch {
+        return false;
     }
 };
 
 /**
- * Submit suspicious activity report
+ * Get sample request data for testing
  */
-export const submitReport = async (reportData: {
-    accountIds: string[];
-    riskScore: number;
-    findings: string[];
-}): Promise<{ reportId: string; status: string }> => {
-    try {
-        const response = await fetch(`${N8N_WEBHOOK_BASE}/submit-report`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(reportData),
-        });
-        return await response.json();
-    } catch (error) {
-        console.error('Report Submission Error:', error);
-        return {
-            reportId: `RPT_${Date.now()}`,
-            status: 'submitted'
-        };
-    }
-};
+export const getSampleRequestData = (): MuleDetectionRequest => ({
+    bankLogins: [
+        {
+            bankName: 'HDFC Bank',
+            userId: 'USR_8847291',
+            ipAddress: '192.168.45.102',
+            deviceId: 'DEV_A7X92M',
+            location: 'Mumbai, India'
+        },
+        {
+            bankName: 'ICICI Bank',
+            userId: 'USR_3372891',
+            ipAddress: '192.168.45.102', // Same IP!
+            deviceId: 'DEV_A7X92M', // Same device!
+            location: 'Mumbai, India'
+        },
+        {
+            bankName: 'SBI',
+            userId: 'USR_9912847',
+            ipAddress: '192.168.45.102', // Same IP!
+            deviceId: 'DEV_A7X92M',
+            location: 'Mumbai, India'
+        }
+    ],
+    transactions: [
+        {
+            fromAccount: 'ACC_VICTIM_001',
+            toAccount: 'ACC_THEFT_001',
+            amount: 500000,
+            timestamp: new Date().toISOString(),
+            bankName: 'HDFC'
+        },
+        {
+            fromAccount: 'ACC_THEFT_001',
+            toAccount: 'ACC_MULE_001',
+            amount: 150000,
+            timestamp: new Date().toISOString(),
+            bankName: 'ICICI'
+        }
+    ],
+    ipAddresses: ['192.168.45.102'],
+    deviceIds: ['DEV_A7X92M']
+});
