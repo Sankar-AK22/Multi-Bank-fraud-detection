@@ -1,0 +1,380 @@
+@import "tailwindcss";
+
+/* ================================
+   CUSTOM CSS PROPERTIES (DESIGN TOKENS)
+   ================================ */
+:root {
+  /* Color Palette */
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111827;
+  --bg-card: rgba(17, 24, 39, 0.8);
+  --glass: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  
+  /* Neon Accent Colors */
+  --accent-blue: #00d4ff;
+  --accent-red: #ff3b5c;
+  --accent-green: #00ff88;
+  --accent-orange: #ff9500;
+  --accent-purple: #a855f7;
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.5);
+  
+  /* Typography */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color-scheme: dark;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ================================
+   GLOBAL RESET & BASE STYLES
+   ================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, #0d1221 50%, var(--bg-primary) 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ================================
+   GLASSMORPHISM UTILITIES
+   ================================ */
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(0, 212, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(0, 212, 255, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* ================================
+   NEON GLOW EFFECTS
+   ================================ */
+.neon-blue {
+  color: var(--accent-blue);
+  text-shadow: 0 0 10px var(--accent-blue), 0 0 20px var(--accent-blue), 0 0 40px var(--accent-blue);
+}
+
+.neon-red {
+  color: var(--accent-red);
+  text-shadow: 0 0 10px var(--accent-red), 0 0 20px var(--accent-red), 0 0 40px var(--accent-red);
+}
+
+.neon-green {
+  color: var(--accent-green);
+  text-shadow: 0 0 10px var(--accent-green), 0 0 20px var(--accent-green), 0 0 40px var(--accent-green);
+}
+
+.neon-orange {
+  color: var(--accent-orange);
+  text-shadow: 0 0 10px var(--accent-orange), 0 0 20px var(--accent-orange);
+}
+
+.glow-box-blue {
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.3), 0 0 40px rgba(0, 212, 255, 0.1);
+}
+
+.glow-box-red {
+  box-shadow: 0 0 20px rgba(255, 59, 92, 0.3), 0 0 40px rgba(255, 59, 92, 0.1);
+}
+
+.glow-box-green {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3), 0 0 40px rgba(0, 255, 136, 0.1);
+}
+
+/* ================================
+   GRADIENT TEXT
+   ================================ */
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 50%, var(--accent-blue) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 3s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+}
+
+/* ================================
+   ANIMATED BACKGROUND GRID
+   ================================ */
+.animated-grid {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-pulse 4s ease-in-out infinite;
+}
+
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* Network Lines Animation */
+.network-lines {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.network-line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+  animation: network-flow 8s linear infinite;
+  opacity: 0.3;
+}
+
+@keyframes network-flow {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100vw); }
+}
+
+/* ================================
+   FLOWING ARROWS ANIMATION
+   ================================ */
+@keyframes flow-pulse {
+  0%, 100% { 
+    opacity: 0.4;
+    stroke-dashoffset: 0;
+  }
+  50% { 
+    opacity: 1;
+    stroke-dashoffset: -20;
+  }
+}
+
+.flow-arrow {
+  stroke-dasharray: 10 5;
+  animation: flow-pulse 1.5s ease-in-out infinite;
+}
+
+/* Money Flow Animation */
+@keyframes money-flow {
+  0% { 
+    transform: translateX(0);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { 
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.money-particle {
+  animation: money-flow 2s ease-in-out infinite;
+}
+
+/* ================================
+   PULSE ANIMATIONS
+   ================================ */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+.pulse-ring {
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ================================
+   RISK METER ANIMATION
+   ================================ */
+@keyframes risk-fill {
+  from { stroke-dashoffset: 283; }
+  to { stroke-dashoffset: var(--risk-offset, 42); }
+}
+
+.risk-meter-circle {
+  animation: risk-fill 2s ease-out forwards;
+}
+
+/* ================================
+   STATUS BADGES
+   ================================ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-safe {
+  background: rgba(0, 255, 136, 0.15);
+  color: var(--accent-green);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+}
+
+.badge-suspicious {
+  background: rgba(255, 149, 0, 0.15);
+  color: var(--accent-orange);
+  border: 1px solid rgba(255, 149, 0, 0.3);
+}
+
+.badge-fraud {
+  background: rgba(255, 59, 92, 0.15);
+  color: var(--accent-red);
+  border: 1px solid rgba(255, 59, 92, 0.3);
+}
+
+/* ================================
+   BUTTON STYLES
+   ================================ */
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-blue) 0%, #0099cc 100%);
+  color: #000;
+  font-weight: 600;
+  padding: 14px 32px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  font-weight: 600;
+  padding: 14px 32px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-blue);
+  background: rgba(0, 212, 255, 0.1);
+}
+
+/* ================================
+   WORKFLOW PIPELINE
+   ================================ */
+.pipeline-connector {
+  position: relative;
+}
+
+.pipeline-connector::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -30px;
+  width: 30px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-blue), transparent);
+}
+
+/* ================================
+   SCROLLBAR STYLING
+   ================================ */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ================================
+   RESPONSIVE UTILITIES
+   ================================ */
+@media (max-width: 768px) {
+  .glass-card {
+    border-radius: 12px;
+  }
+  
+  .btn-primary, .btn-secondary {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+}
